@@ -3,7 +3,6 @@ package fr.pilato.test.zombie.minio;
 import com.carrotsearch.randomizedtesting.RandomizedRunner;
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakLingering;
 import com.carrotsearch.randomizedtesting.annotations.ThreadLeakScope;
-import com.carrotsearch.randomizedtesting.annotations.TimeoutSuite;
 import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 import org.junit.Test;
@@ -11,9 +10,8 @@ import org.junit.runner.RunWith;
 import org.testcontainers.containers.MinIOContainer;
 
 @RunWith(RandomizedRunner.class)
-@TimeoutSuite(millis = 5 * 60 * 1000)
 @ThreadLeakScope(ThreadLeakScope.Scope.SUITE)
-@ThreadLeakLingering(linger = 10000) // 5 sec lingering
+@ThreadLeakLingering(linger = 200) // 200 ms lingering
 public class ZombieDemoIT {
 
     @Test
