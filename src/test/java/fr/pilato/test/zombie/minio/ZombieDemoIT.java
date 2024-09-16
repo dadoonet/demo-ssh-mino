@@ -8,8 +8,7 @@ import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.net.ConnectException;
+import org.testcontainers.containers.MinIOContainer;
 
 @RunWith(RandomizedRunner.class)
 @TimeoutSuite(millis = 5 * 60 * 1000)
@@ -19,17 +18,17 @@ public class ZombieDemoIT {
 
     @Test
     public void testZombie() throws Exception {
-        System.out.println("Starting Minio Client");
-        MinioClient minioClient = MinioClient.builder()
-                .endpoint("http://localhost:8080")
-                .credentials("foo", "bar")
-                .build();
-        try {
-            minioClient.bucketExists(BucketExistsArgs.builder().bucket("foo").build());
-        } catch (ConnectException expected) {
-            // Expected
+        try (MinIOContainer container = new MinIOContainer("minio/minio")) {
+            System.out.println("Starting Minio Container");
+            container.start();
+
+            try (MinioClient minioClient = MinioClient.builder()
+                    .endpoint(container.getS3URL())
+                    .credentials(container.getUserName(), container.getPassword())
+                    .build()) {
+                System.out.println("Starting Minio Client");
+                minioClient.bucketExists(BucketExistsArgs.builder().bucket("foo").build());
+            }
         }
-        minioClient.close();
-        System.out.println("Minio Client stopped");
     }
 }

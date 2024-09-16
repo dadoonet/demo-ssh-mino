@@ -8,21 +8,21 @@ import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.rnorth.ducttape.timeouts.Timeouts;
+import org.testcontainers.containers.MinIOContainer;
+
+import java.util.concurrent.TimeUnit;
 
 @RunWith(RandomizedRunner.class)
 @TimeoutSuite(millis = 5 * 60 * 1000)
 @ThreadLeakScope(ThreadLeakScope.Scope.SUITE)
 @ThreadLeakLingering(linger = 10000) // 5 sec lingering
-public class NoZombieDemoIT {
+public class ZombieDucttapeDemoIT {
 
-    @Test(expected = java.net.ConnectException.class)
+    @Test
     public void testZombie() throws Exception {
-        System.out.println("Starting Minio client with auto-close");
-        try (MinioClient minioClient = MinioClient.builder()
-                .endpoint("http://localhost:8080")
-                .credentials("foo", "bar")
-                .build()) {
-            minioClient.bucketExists(BucketExistsArgs.builder().bucket("foo").build());
-        }
+        Timeouts.doWithTimeout(1, TimeUnit.SECONDS, () -> {
+            System.out.println("Hello world!");
+        });
     }
 }
