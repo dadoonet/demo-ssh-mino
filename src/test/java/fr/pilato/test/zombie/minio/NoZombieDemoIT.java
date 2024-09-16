@@ -17,7 +17,7 @@ public class NoZombieDemoIT {
 
     @Test(expected = java.net.ConnectException.class)
     public void testZombie() throws Exception {
-        System.out.println("Starting Minio Client");
+        System.out.println("Starting Minio client with auto-close");
         try (MinioClient minioClient = MinioClient.builder()
                 .endpoint("http://localhost:8080")
                 .credentials("foo", "bar")
