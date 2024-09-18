@@ -7,7 +7,8 @@ import io.minio.BucketExistsArgs;
 import io.minio.MinioClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testcontainers.containers.MinIOContainer;
+
+import java.net.ConnectException;
 
 @RunWith(RandomizedRunner.class)
 @ThreadLeakScope(ThreadLeakScope.Scope.SUITE)
@@ -16,17 +17,15 @@ public class ZombieDemoIT {
 
     @Test
     public void testZombie() throws Exception {
-        try (MinIOContainer container = new MinIOContainer("minio/minio")) {
-            System.out.println("Starting Minio Container");
-            container.start();
-
-            try (MinioClient minioClient = MinioClient.builder()
-                    .endpoint(container.getS3URL())
-                    .credentials(container.getUserName(), container.getPassword())
-                    .build()) {
-                System.out.println("Starting Minio Client");
-                minioClient.bucketExists(BucketExistsArgs.builder().bucket("foo").build());
-            }
+        try (MinioClient minioClient = MinioClient.builder()
+                .endpoint("http://127.0.0.1:9000")
+                .credentials("minioadmin", "minioadmin")
+                .build()) {
+            System.out.println("Starting Minio Client");
+            minioClient.bucketExists(BucketExistsArgs.builder().bucket("foo").build());
+        } catch (ConnectException e) {
+            System.out.println("You need to start a minio service first:");
+            System.out.println("docker run -p 9000:9000 minio/minio server /tmp");
         }
     }
 }
